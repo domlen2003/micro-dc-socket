@@ -1,3 +1,5 @@
+use uuid::Uuid;
+
 fn main() {
     println!("Hello, world!");
 }
@@ -9,29 +11,30 @@ enum NodeState {
     Leader,    //If a node is the only node in the cluster, it starts as the leader
 }
 
+struct Node {
+    id: Uuid,
+    state: NodeState,
+}
+
 enum ConnectionState {
     // If a bot starts, it is not connected to the discord server
-    NotConnected, 
+    NotConnected,
     // If a bot is not connected to the discord server, it tries to connect -> many shards could be needed so this state could take a while
     Connecting {
         target_count: u64,
-    }, 
+    },
     // All shards are connected to the discord server
     Connected {
         current_count: u64,
-    }, 
+    },
     // If in this state the bot is gracefully rolling out a new shard count
     UpdatingShards {
         current_count: u64,
         target_count: u64,
-    }, 
+    },
 }
-
-
-
 
 struct BotState {
     connection_state: ConnectionState,
     //TODO: add info about which instance handles which shard
-
 }
