@@ -1,9 +1,29 @@
+use std::iter::Map;
 use uuid::Uuid;
 
-fn main() {
-    println!("Hello, world!");
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let node = Node::new();
+    print!("This is node: {node:?}");
+    Ok(())
 }
 
+#[derive(Clone, Debug)]
+struct Node {
+    id: Uuid,
+    state: NodeState,
+}
+
+impl Node {
+    fn new() -> Self {
+        Self {
+            id: Uuid::new_v4(),
+            state: NodeState::Uninitialized,
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
 enum NodeState {
     Uninitialized, //Every node starts out as uninitialized -> it has to fetch information about the rest of the cluster before it can start, won't take action in votings
     Follower, //If a node is initialized but not the only node in the cluster, it becomes a follower
@@ -11,12 +31,7 @@ enum NodeState {
     Leader,    //If a node is the only node in the cluster, it starts as the leader
 }
 
-struct Node {
-    id: Uuid,
-    state: NodeState,
-}
-
-enum ConnectionState {
+enum BotState {
     // If a bot starts, it is not connected to the discord server
     NotConnected,
     // If a bot is not connected to the discord server, it tries to connect -> many shards could be needed so this state could take a while
@@ -34,7 +49,9 @@ enum ConnectionState {
     },
 }
 
-struct BotState {
-    connection_state: ConnectionState,
-    //TODO: add info about which instance handles which shard
+struct SyncedState {
+    // Current state of the Bot
+    connection_state: BotState,
+    // Current handlers for the Bots shards
+    handlers: Map<u64, Uuid>,
 }
