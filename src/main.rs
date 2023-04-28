@@ -4,7 +4,7 @@ use uuid::Uuid;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let node = Node::new();
-    print!("This is node: {node:?}");
+    println!("This is node: {node:?}");
     Ok(())
 }
 
